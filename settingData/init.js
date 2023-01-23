@@ -1,5 +1,6 @@
 let mongoose = require('mongoose')
 mongoose = require('../config/mongoose')
+// db = mongoose()
 db = mongoose()
 
 const initialData = async () => {
