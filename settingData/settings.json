@@ -1,0 +1,13 @@
+{
+    "uniqueId": 1,
+    "adminEmail": "admin@gmail.com",
+    "adminPhoneNumber": "7896541230",
+    "adminContactEmail": "admin@gmail.com",
+    "adminContactPhoneNumber": "7896541230",
+    "appName": "AlphaBrandsDistribution",
+    "databaseURL": "",
+    "adminBaseUrl": "",
+    "userBaseUrl": "",
+    "maximumPhoneNumberLength": "12",
+    "minimumPhoneNumberLength": "8"
+}

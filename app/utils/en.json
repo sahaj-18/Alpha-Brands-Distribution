@@ -1,0 +1,58 @@
+{
+    "en": {
+        "successCode": {
+            "201":"Admin Added Successfully",
+            "202": "Admin Detail Succeed",
+            "203": "Logged In Successfully",
+            "204": "Logged Out Successfully",
+            "303": "User Successfully Registered",
+            "304": "Login Successfully",
+            "305": "User Update Successfully",
+            "306": "User Details Succeed",
+            "205": "Admin List Succeed",
+            "206": "Admin Update Successfully",
+            "207": "Admin Deleted Successfully",
+            "307": "User List Succeed",
+            "308": "Otp Sent Successfully",
+            "309":"Otp Verify Successfully",
+            "310":"Password Successfully Reset",
+            "601": "Product Added Successfully",
+            "602": "Product Update Successfully",
+            "603": "Product Deleted Successfully",
+            "701": "SettingDetail List Succeed",
+            "702": "SettingDetail Update Successfully",
+            "604": "Product List Succeed",
+            "801": "Item Added In Cart Successfully",
+            "802": "Item Edit Succesfully",
+            "803": "Item Remove From Cart Successfully",
+            "804": "Cart Clear Successfully",
+            "311": "User Approved"
+        },
+        "errorCode": {
+            "101": "Something Went Wrong",
+            "102": "Details Not Found",
+            "103": "Type Not Found",
+            "201": "Email Already Registered",
+            "202": "Admin Not Saved",
+            "203": "Invalid Password",
+            "204": "Authentication Token Is Not Valid",
+            "205":"User Do Not Need Approval",
+            "301": "Phone Already Registered",
+            "302": "Password Must Be 6 Character Long",
+            "303": "User Not Saved",
+            "304": "User Data Not Found",
+            "305": "Invalid Password",
+            "306": "Update Failed",
+            "307": "Inavalid Otp",
+            "308": "Password Not Saved",
+            "601": "Product Not Saved",
+            "602": "Product Updation Failed",
+            "701": "Setting Updation Failed",
+            "801": "Item Not Added",
+            "802": "Updation Failed",
+            "206": "User Already Approved",
+            "207": "First You Need To Logout From Another Session"
+
+        } 
+    }
+}

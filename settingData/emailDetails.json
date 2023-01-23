@@ -1,0 +1,50 @@
+[
+    {
+        "uniqueId": 1,
+        "templateUniqueId": 1,
+        "emailTitle": "Welcome to AlphaBrandsDistribution",
+        "emailContent": "Hey! Welcome to AlphaBrandsDistribution! Thanks so much for joining us.",
+        "emailAdminInfo": "For any query or consolation info@xyz.com",
+        "isSend": false
+    },
+    {
+        "uniqueId": 2,
+        "templateUniqueId": 2,
+        "emailTitle": "Approve from AlphaBrandsDistribution Admin",
+        "emailContent": "Hey! You are approve from admin, you can create new order from your app.",
+        "emailAdminInfo": "For any query or consolation info@xyz.com",
+        "isSend": false
+    },
+    {
+        "uniqueId": 3,
+        "templateUniqueId": 3,
+        "emailTitle": "Decline from AlphaBrandsDistribution Admin",
+        "emailContent": "Hey! You decline from admin, Please contact admin.",
+        "emailAdminInfo": "For any query or consolation info@xyz.com",
+        "isSend": false
+    },
+    {
+        "uniqueId": 4,
+        "templateUniqueId": 4,
+        "emailTitle": "Forgot password Verification Code",
+        "emailContent": "Your verification code is",
+        "emailAdminInfo": "For any query or consolation info@xyz.com",
+        "isSend": false
+    },
+    {
+        "uniqueId": 5,
+        "templateUniqueId": 5,
+        "emailTitle": "Reset Password",
+        "emailContent": "Password is successfully reset. Please don t forget to change the password once you log in next time.",
+        "emailAdminInfo": "For any query or consolation info@xyz.com",
+        "isSend": false
+    },
+    {
+        "uniqueId": 6,
+        "templateUniqueId": 6,
+        "emailTitle": "Sub Admin Has Been Registered",
+        "emailContent": "Sub Admin Has Been Registered With Email Address: XXXXXX",
+        "emailAdminInfo": "For any query or consolation info@xyz.com",
+        "isSend": false
+    }
+]
