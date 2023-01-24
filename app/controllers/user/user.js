@@ -20,6 +20,8 @@ exports.userRegistartion = async (req, res) => {
         requestDataBody.firstName = requestDataBody.firstName.trim().toLowerCase(),
             requestDataBody.lastName = requestDataBody.lastName.trim().toLowerCase(),
             requestDataBody.email = requestDataBody.email.trim().toLowerCase()
+            const jwtToken = utils.generateJwtToken(requestDataBody.email)
+            requestDataBody.jwtToken = jwtToken
         const newUser = new User(requestDataBody)
         const imageFile = req.files
         if (imageFile !== undefined && imageFile.length > 0) {
@@ -28,6 +30,7 @@ exports.userRegistartion = async (req, res) => {
             newUser.profile = url
             utils.storeImageToFolder(imageFile[0].path, imageName + FILE_EXTENSION.USER, FOLDER_NAME.USER_PROFILES)
         }
+        
         const emailTemplate = await Email.findOne({templateUniqueId : 1})
         utils.sendEmails(newUser.email,emailTemplate.emailTitle,emailTemplate.emailContent)
         const addUser = await newUser.save()
