@@ -5,6 +5,7 @@ const admin = require('../../controllers/admin/admin')
 const product = require('../../controllers/product/product')
 const settings = require('../../controllers/admin/settings')
 const cart = require('../../controllers/cart/cart')
+const orderHistory = require('../../controllers/orders/orderHistory')
 
 router.post('/api/admin/addAdmin', admin.addAdmin)
 router.post('/api/admin/getAdminDetail', admin.getAdminDetail)
@@ -35,6 +36,9 @@ router.post('/api/admin/editItemInCart',cart.editItemInCart)
 router.post('/api/admin/deleteItemInCart',cart.deleteItemInCart)
 router.post('/api/admin/clearWholeCart',cart.clearWholeCart)
 router.post('/api/admin/getCartDetails',cart.getCartDetails)
+
+router.post('/api/admin/addToOrderHistory',orderHistory.addToOrderHistory)
+router.post('/api/admin/getOrderHistorySearchSort',orderHistory.getOrderHistorySearchSort)
 
 router.post('/api/admin/getLastMonthAndLastWeekUserCount',admin.getLastMonthAndLastWeekUserCount)
 

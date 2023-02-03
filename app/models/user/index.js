@@ -17,6 +17,7 @@ const user = schema({
 	profile: {type: String, default: ''},
 	isApproved: {type : Boolean,default: false},
 	cartId: { type: schema.Types.ObjectId,default:null},
+	address: { type: String, default: '' },
 	created_at: {
 		type: Date,
 		default: Date.now

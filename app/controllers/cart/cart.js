@@ -41,6 +41,7 @@ exports.addToCart = async (req,res) => {
                 productTitle: product.productTitle,
                 productDescription: product.productDescription,
                 price: price,
+                category:product.category,
                 quantity:requestDataBody.quantity
             })
             const newCartItem = new Cart({
@@ -64,6 +65,7 @@ exports.addToCart = async (req,res) => {
                         productTitle: item.productTitle,
                         productDescription: item.productDescription,
                         price: item.price,
+                        category:product.category,
                         quantity:requestDataBody.quantity
                     }
                     finalArr.splice(indexs,1)
@@ -90,6 +92,7 @@ exports.addToCart = async (req,res) => {
                 productTitle: product.productTitle,
                 productDescription: product.productDescription,
                 price: price,
+                category:product.category,
                 quantity:requestDataBody.quantity
             }
             const editInCart = await Cart.findByIdAndUpdate(cartItems[0]._id,{ $push: { items: obj } },{new: true}).exec()
@@ -169,21 +172,29 @@ exports.getCartDetails = async (req,res) => {
     try{
         const requestDataBody = req.body
         await utils.checkRequestParams(req.body, [{ name: 'userId', type: 'string' }])
-        const cartDeatils = await Cart.aggregate([{
-            $lookup: {
-                from: "users",
-                localField: "userId",
-                foreignField: "_id",
-                as: "user_details",
-              },
-        }])
-        let cartItemArray = cartDeatils[0].items
+        const cartDeatils = await Cart.find({userId : requestDataBody.userId})
+        if(cartDeatils.length === 0) throw ({ errorCode: ERROR_CODE.DETAILS_NOT_FOUND })
+
+        const countryQuery = {
+			$lookup: {
+				from: 'users',
+				localField: 'userId',
+				foreignField: '_id',
+				as: 'userDetails'
+			}
+		}
+        const userDetails = await Cart.aggregate([countryQuery])
+        let arr = []
+        userDetails.map((item) => {
+            if(item.userId.equals(requestDataBody.userId)){
+                arr.push(item)
+            }
+        })
         let total = 0;
-        cartItemArray.map((item) => {
+        (arr[0].items).map((item) => {
             total += (Number(item.price) * Number(item.quantity))
         })
-        if(cartDeatils.length === 0) throw ({ errorCode: ERROR_CODE.DETAILS_NOT_FOUND })
-        res.json({success: true,responseData : cartDeatils[0],total: total})
+        res.json({success: true,responseData : arr,total:total})
     } catch (error) { 
         utils.catchBlockErrors(req.headers.lang, error, res)
     }

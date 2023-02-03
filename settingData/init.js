@@ -19,7 +19,7 @@ const initialData = async () => {
 	const emailDetails = await Email.findOne({})
 
 	if (!emailDetails) {
-		Email.create(emailData, function (_err, jellybean, snickers) { })
+		Email.create(emailData, function (_err, jellybean, snickers) {})
 	}
 }
 

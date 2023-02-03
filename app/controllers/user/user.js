@@ -22,6 +22,9 @@ exports.userRegistartion = async (req, res) => {
             requestDataBody.email = requestDataBody.email.trim().toLowerCase()
             const jwtToken = utils.generateJwtToken(requestDataBody.email)
             requestDataBody.jwtToken = jwtToken
+            if(Number(requestDataBody.type) === 1){
+                requestDataBody.isApproved = true
+            }
         const newUser = new User(requestDataBody)
         const imageFile = req.files
         if (imageFile !== undefined && imageFile.length > 0) {
@@ -103,7 +106,7 @@ exports.userUpdate = async (req, res) => {
 			requestDataBody.profile = url
 			utils.storeImageToFolder(imageFile[0].path, imageName + FILE_EXTENSION.USER, FOLDER_NAME.USER_PROFILES)
 		}
-        const updatedUser = await User.findOneAndUpdate(requestDataBody.userId, requestDataBody, { new: true })
+        const updatedUser = await User.findByIdAndUpdate(requestDataBody.userId, requestDataBody, { new: true })
 		if (!updatedUser) throw ({ errorCode: USER_ERROR_CODE.UPDATE_FAILED })
         return res.json({ success: true, ...utils.middleware(req.headers.lang, USER_MESSAGE_CODE.UPDATED_SUCCESSFULLY, true), responseData: updatedUser })
     } catch (error) {

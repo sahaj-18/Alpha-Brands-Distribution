@@ -17,6 +17,7 @@ module.exports = function () {
 	require('../app/models/admin/email')
 	require('../app/models/admin/product')
 	require('../app/models/admin/cart')
+	require('../app/models/admin/orderHistory')
 
 	return db
 }
