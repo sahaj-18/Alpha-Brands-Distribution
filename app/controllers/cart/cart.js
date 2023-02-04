@@ -128,7 +128,7 @@ exports.editItemInCart = async (req,res) => {
         })
         editcartItem = await Cart.findByIdAndUpdate(itemsInCart[0]._id,{items:itemsInCartArray},{new:true})
         if(!editcartItem) throw ({ errorCode: CART_ERROR_CODE.UPDATION_FAILED })
-        return res.json({ success: true, ...utils.middleware(req.headers.lang, CART_MESSAGE_CODE.ITEM_EDIT_SUCCESFULLY, true), responseData: editcartItem })
+        return res.json({ success: true, ...utils.middleware(req.headers.lang, CART_MESSAGE_CODE.ITEM_EDIT_SUCCESFULLY, true), responseData: [editcartItem] })
     } catch (error) {
         utils.catchBlockErrors(req.headers.lang, error, res)
     }
