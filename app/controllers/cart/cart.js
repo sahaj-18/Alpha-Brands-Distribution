@@ -42,7 +42,7 @@ exports.addToCart = async (req,res) => {
                 productDescription: product.productDescription,
                 price: price,
                 category:product.category,
-                quantity:requestDataBody.quantity
+                quantity:Number(requestDataBody.quantity)
             })
             const newCartItem = new Cart({
             userId: requestDataBody.userId,
@@ -66,7 +66,7 @@ exports.addToCart = async (req,res) => {
                         productDescription: item.productDescription,
                         price: item.price,
                         category:product.category,
-                        quantity:requestDataBody.quantity
+                        quantity:Number(requestDataBody.quantity)
                     }
                     finalArr.splice(indexs,1)
                     finalArr.push(obj)
@@ -93,7 +93,7 @@ exports.addToCart = async (req,res) => {
                 productDescription: product.productDescription,
                 price: price,
                 category:product.category,
-                quantity:requestDataBody.quantity
+                quantity:Number(requestDataBody.quantity)
             }
             const editInCart = await Cart.findByIdAndUpdate(cartItems[0]._id,{ $push: { items: obj } },{new: true}).exec()
             if(!editInCart) throw ({ errorCode: CART_ERROR_CODE.ITEM_NOT_ADDED })
@@ -120,7 +120,7 @@ exports.editItemInCart = async (req,res) => {
                     productTitle: item.productTitle,
                     productDescription: item.productDescription,
                     price: item.price,
-                    quantity:requestDataBody.quantity
+                    quantity:Number(requestDataBody.quantity)
                 }
                 itemsInCartArray.splice(index,1)
                 itemsInCartArray.push(obj)
