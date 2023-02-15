@@ -6,6 +6,9 @@ const utils = require('../../utils/utils')
 const User = require('mongoose').model('user')
 const Email = require('mongoose').model('emailDetail')
 const Setting = require('mongoose').model('setting')
+const Cart = require('mongoose').model('cart')
+const Product = require('mongoose').model('product')
+const OrderHistory = require('mongoose').model('orderHistory')
 
 exports.userRegistartion = async (req, res) => {
     try {
@@ -195,4 +198,26 @@ exports.setNewPassword = async (req , res) => {
     } catch (error) {
         utils.catchBlockErrors(req.headers.lang, error, res)
     }
+}
+
+exports.deleteUser = async (req, res) => {
+	try {
+		await utils.middleware(req.body, [{ name: 'userId', type: 'string' }, { name: 'password', type: 'string' }])
+		const requestDataBody = req.body
+		const userId = requestDataBody.userId
+		const password = requestDataBody.password
+		const user = await User.findOne({ _id: userId })
+		if (!user) throw ({ errorCode: USER_ERROR_CODE.USER_DATA_NOT_FOUND })
+		if (user.password !== utils.encryptPassword(password)) throw ({ errorCode: USER_ERROR_CODE.INVALID_PASSWORD })
+
+		const cart = await Cart.find({userId : user._id})
+        if(cart.length > 0){
+            const Deletecart = await Cart.findByIdAndDelete(cart[0]._id)
+            if (!Deletecart) throw ({ errorCode: ERROR_CODE.SOMETHING_WENT_WRONG })
+        }
+		await User.remove({ _id: userId })
+		return res.json({ success: true, ...utils.middleware(req.headers.lang, USER_MESSAGE_CODE.USER_DELETED_SUCCESSFULLY, true) })
+	} catch (error) {
+		utils.catchBlockErrors(req.headers.lang, error, res)
+	}
 }

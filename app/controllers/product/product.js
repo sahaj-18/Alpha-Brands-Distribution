@@ -3,6 +3,8 @@ require('../../utils/errorCode')
 require('../../utils/constant')
 const utils = require('../../utils/utils')
 const Product = require('mongoose').model('product')
+const User = require('mongoose').model('user')
+const Cart = require('mongoose').model('cart')
 
 exports.addProduct = async (req,res) => {
     try {
@@ -69,6 +71,17 @@ exports.getDetailOfProduct = async (req,res) => {
 exports.productSearchSortList = async (req,res) => {
     try {
         const requestDataBody = req.body
+
+        if(req.body.userId){
+        const getUserDetails = await User.findById(req.body.userId)
+        if(!getUserDetails.isApproved){
+            throw ({ errorCode: PRODUCT_ERROR_CODE.YOU_ARE_NOT_APPROVED_BY_ADMIN })
+        }
+        }
+
+
+
+
         const numberOfRecord = Number(requestDataBody.numberOfRecord) || 10000
         const page = Number(requestDataBody.page) || 1
         const searchField = requestDataBody.searchField
@@ -185,6 +198,18 @@ exports.productSearchSortList = async (req,res) => {
 exports.deleteProduct = async (req,res) => {
     try{
         await utils.checkRequestParams(req.body, [{ name: 'productId', type: 'string' }])
+        const carts = await Cart.find()
+        carts.map((items) => {
+            let arr = items.items
+            console.log(arr);
+            (items.items).map(async (item,index) => {
+                if(item._id.equals(req.body.productId)){
+                    arr.splice(index,1)
+                    await Cart.findByIdAndUpdate(items._id,{items:arr},{new:true})
+                    // throw ({ errorCode: ERROR_CODE.SOMETHING_WENT_WRONG })
+                }
+            })
+        })
         const product = await Product.remove({ _id: req.body.productId })
         if (product.deletedCount !== 1) throw ({ errorCode: ERROR_CODE.DETAILS_NOT_FOUND })
         return res.json({ success: true, ...utils.middleware(req.headers.lang, PRODUCT_MESSAGE_CODE.PRODUCT_DELETED_SUCCESSFULLY, true) })

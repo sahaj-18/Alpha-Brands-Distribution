@@ -10,6 +10,7 @@ const Product = require('mongoose').model('product')
 exports.addToCart = async (req,res) => {
     try {
         const requestDataBody = req.body
+        console.log(requestDataBody);
         let checkBool = 0;
         await utils.checkRequestParams(req.body, [{ name: 'userId', type: 'string' },{ name: 'productId', type: 'string' }])
         const user = await User.findById(requestDataBody.userId)
@@ -55,6 +56,7 @@ exports.addToCart = async (req,res) => {
         await user.save()
         return res.json({ success: true, ...utils.middleware(req.headers.lang, CART_MESSAGE_CODE.ITEM_ADDED, true), responseData: addItemInCart })
         }else if(boolArr.includes(true)){
+            const product = await Product.findById(requestDataBody.productId) 
             checkBool = 2
             let finalArr = cartItems[0].items
             finalArr.map((item,indexs) => {
@@ -120,7 +122,8 @@ exports.editItemInCart = async (req,res) => {
                     productTitle: item.productTitle,
                     productDescription: item.productDescription,
                     price: item.price,
-                    quantity:Number(requestDataBody.quantity)
+                    quantity:Number(requestDataBody.quantity),
+                    category:item.category
                 }
                 itemsInCartArray.splice(index,1)
                 itemsInCartArray.push(obj)

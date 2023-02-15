@@ -27,7 +27,8 @@
             "803": "Item Remove From Cart Successfully",
             "804": "Cart Clear Successfully",
             "311": "User Approved",
-            "901": "Order History List Succeed"
+            "901": "Order History List Succeed",
+            "312": "User Deleted Succesfully"
         },
         "errorCode": {
             "101": "Something Went Wrong",
@@ -53,7 +54,8 @@
             "802": "Updation Failed",
             "206": "User Already Approved",
             "207": "First You Need To Logout From Another Session",
-            "901":"Order History Not Saved"
+            "901":"Order History Not Saved",
+            "603": "You Are Not Approved By Admin"
 
         } 
     }

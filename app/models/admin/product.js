@@ -4,7 +4,7 @@ const autoIncrement = require('mongoose-auto-increment')
 autoIncrement.initialize(mongoose.connection)
 const product = schema({
 	uniqueId: Number,
-	productImage: { type: String, default: '' }, 
+	productImage: { type: String, default: 'Static/snacks.png' }, 
 	productTitle: { type: String, default: '' }, 
 	category: { type: String, default: '' }, 
 	productDescription: { type: String, default: '' }, 

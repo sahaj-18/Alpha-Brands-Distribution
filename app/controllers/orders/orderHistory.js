@@ -11,33 +11,26 @@ exports.addToOrderHistory = async (req,res) => {
     try {
         const requestDataBody = req.body
         await utils.checkRequestParams(req.body, [{ name: 'userId', type: 'string' }])
-        const cartDeatils = await Cart.aggregate([{
-            $lookup: {
-                from: "users",
-                localField: "userId",
-                foreignField: "_id",
-                as: "user_details",
-              },
-        }])
+        const cartDeatils = await Cart.find({userId:requestDataBody.userId})
+        if(cartDeatils.length === 0) throw ({ errorCode: ERROR_CODE.DETAILS_NOT_FOUND })
         let cartItemArray = cartDeatils[0].items
         let total = 0;
         cartItemArray.map((item) => {
             total += (Number(item.price) * Number(item.quantity))
         })
-        if(cartDeatils.length === 0) throw ({ errorCode: ERROR_CODE.DETAILS_NOT_FOUND })
+        const findUser = await User.findById(requestDataBody.userId)
+        if(!findUser) throw ({ errorCode: USER_ERROR_CODE.USER_DATA_NOT_FOUND })
         const newOrderDetail = new OrderHistory({
-            firstName: cartDeatils[0].user_details[0].firstName,
-            lastName: cartDeatils[0].user_details[0].lastName,
-            email: cartDeatils[0].user_details[0].email,
-            phone: cartDeatils[0].user_details[0].phone,
-            profile: cartDeatils[0].user_details[0].profile,
+            firstName: findUser.firstName,
+            lastName: findUser.lastName,
+            email: findUser.email,
+            phone: findUser.phone,
+            profile: findUser.profile,
             items: cartDeatils[0].items,
             total: total
         })
         const addHistory = await newOrderDetail.save()
         if (!addHistory) throw ({ errorCode: ORDER_HISTORY_ERROR_CODE.ORDER_HISTORY_NOT_SAVED })
-        const findUser = await User.findById(requestDataBody.userId)
-        if(!findUser) throw ({ errorCode: USER_ERROR_CODE.USER_DATA_NOT_FOUND })
         let cartId = findUser.cartId
         findUser.cartId = null
         const userUpate = await findUser.save()

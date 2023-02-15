@@ -11,5 +11,6 @@ router.post('/api/user/gteUserDetail',user.gteUserDetail)
 router.post('/api/user/forgotPassword',user.forgotPassword)
 router.post('/api/user/verificationOfOtp',user.verificationOfOtp)
 router.post('/api/user/setNewPassword',user.setNewPassword)
+router.post('/api/user/deleteUser',user.deleteUser)
 
 module.exports = router
