@@ -42,6 +42,8 @@ router.post('/api/admin/getOrderHistorySearchSort',orderHistory.getOrderHistoryS
 
 router.post('/api/admin/getLastMonthAndLastWeekUserCount',admin.getLastMonthAndLastWeekUserCount)
 
+router.post('/api/admin/paymentIntent',admin.paymentIntent)
+
 
 
 module.exports = router

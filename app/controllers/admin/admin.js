@@ -5,6 +5,23 @@ const utils = require('../../utils/utils')
 const Admin = require('mongoose').model('admin')
 const User = require('mongoose').model('user')
 
+
+exports.paymentIntent = async (req,res) => {
+	try {
+		const stripe = require('stripe')('sk_test_51McibOLu6kryVLFNz5u9xGMfKSF63IFBdEhxHv2WqeSOSK6fFQRs4OVZpEtMk2QHkNtLGYHsFfPxtgPVqZHsbrJE00hOOT347g');
+		console.log(req.body.amount);
+		const paymentIntent = await stripe.paymentIntents.create({
+			// amount: 1099,
+			amount:req.body.amount,
+			currency: 'cad',
+		  });
+		  const clientSecret = paymentIntent.client_secret
+		  return res.json({ success: true, responseData: clientSecret })
+	} catch (error) {
+
+	}
+}
+
 exports.addAdmin = async (req, res) => {
     try {
         await utils.checkRequestParams(req.body, [{ name: 'adminName', type: 'string' }, { name: 'email', type: 'string' }, { name: 'password', type: 'string' }])
