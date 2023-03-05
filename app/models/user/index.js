@@ -18,6 +18,8 @@ const user = schema({
 	isApproved: {type : Boolean,default: false},
 	cartId: { type: schema.Types.ObjectId,default:null},
 	address: { type: String, default: '' },
+	customerId: { type: String, default: '' },
+	paymentIntentId: { type: String, default: '' },
 	created_at: {
 		type: Date,
 		default: Date.now

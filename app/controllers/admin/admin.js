@@ -4,7 +4,133 @@ require('../../utils/constant')
 const utils = require('../../utils/utils')
 const Admin = require('mongoose').model('admin')
 const User = require('mongoose').model('user')
+const Card = require('mongoose').model('card')
 
+
+exports.addCard = async (req, res) => {
+	try {
+		await utils.checkRequestParams(req.body, [{ name: 'userId', type: 'string' }])
+		const requestDataBody = req.body
+		const user = await User.findOne({ _id: requestDataBody.userId })
+		if (!user) throw ({ errorCode: USER_ERROR_CODE.USER_DATA_NOT_FOUND })
+		const stripe = require('stripe')('sk_test_51McibOLu6kryVLFNz5u9xGMfKSF63IFBdEhxHv2WqeSOSK6fFQRs4OVZpEtMk2QHkNtLGYHsFfPxtgPVqZHsbrJE00hOOT347g')
+		let customerDetail
+		if (!user.customerId) {
+			customerDetail = await stripe.customers.create({
+				name: user.firstName + ' ' + user.lastName,
+				email: user.email,
+				phone: user.phoneNumber,
+				source: requestDataBody.token.id
+			})
+			user.customerId = customerDetail.id
+			await user.save()
+		} else {
+			customerDetail = await stripe.customers.createSource(
+				user.customerId,
+				{
+					source: requestDataBody.token.id
+				}
+			)
+		}
+		await stripe.paymentMethods.attach(
+			requestDataBody.paymentMethod,
+			{ customer: user.customerId }
+		)
+		console.log(customerDetail);
+		const cardData = await Card.find({ userId: requestDataBody.userId })
+		const card = new Card({
+			cardExpiryDate: requestDataBody.token.card.exp_month + '/' + requestDataBody.token.card.exp_year,
+			cardHolderName: user.firstName + ' ' + user.lastName,
+			paymentId: requestDataBody.paymentId,
+			userId: requestDataBody.userId,
+			lastFour: requestDataBody.token.card.last4,
+			paymentToken: requestDataBody.paymentMethod,
+			tokenId: requestDataBody.token.id,
+
+			cardType: requestDataBody.token.card.brand,
+			cardId: requestDataBody.token.card.id,
+			customerId: user.customerId
+		})
+		if (cardData.length > 0) card.isDefault = false
+		else card.isDefault = true
+		const newCard = await card.save()
+		if (!newCard) throw ({ errorCode: CARD_ERROR_CODE.CARD_NOT_SAVED })
+		res.json({ success: true, ...utils.middleware(req.headers.lang, CARD_MESSAGE_CODE.CARD_ADDED_SUCCESSFULLY, true), responseData: card })
+	} catch (error) {
+		console.log(error)
+		utils.catchBlockErrors(req.headers.lang, error, res)
+	}
+}
+
+exports.getCardListForUser = async (req, res) => {
+	try {
+		await utils.checkRequestParams(req.body, [{ name: 'userId', type: 'string' }])
+		const requestDataBody = req.body
+		const user = await User.findOne({ _id: requestDataBody.userId })
+		if (!user) throw ({ errorCode: USER_ERROR_CODE.USER_DATA_NOT_FOUND })
+		const cards = await Card.find({ userId: requestDataBody.userId })
+
+		if (cards.length === 0) throw ({ errorCode: CARD_ERROR_CODE.CARD_DATA_NOT_FOUND })
+
+		return res.json({ success: true, responseData: cards })
+	} catch (error) {
+		utils.catchBlockErrors(req.headers.lang, error, res)
+	}
+}
+
+exports.getStripePaymentIdForWallets = async (req, res) => {
+	try {
+		await utils.checkRequestParams(req.body, [{ name: 'userId', type: 'string' }])
+		const requestDataBody = req.body
+		const amount = Number(requestDataBody.amount)
+		const userId = requestDataBody.userId
+		const user = await User.findOne({ _id: userId })
+		if (!user) throw ({ errorCode: USER_ERROR_CODE.USER_DATA_NOT_FOUND })
+		const stripe = require('stripe')('sk_test_51McibOLu6kryVLFNz5u9xGMfKSF63IFBdEhxHv2WqeSOSK6fFQRs4OVZpEtMk2QHkNtLGYHsFfPxtgPVqZHsbrJE00hOOT347g')
+		const userCard = await Card.findOne({ userId: user._id, isDefault: true })
+		console.log(userCard);
+		if (!userCard) throw ({ errorCode: CARD_ERROR_CODE.CARD_DATA_NOT_FOUND })
+		const paymentIntent = await stripe.paymentIntents.create({
+			amount: Math.round((amount * 100)),
+			currency: 'cad', // user.walletCurrencyCode,
+			customer: user.customerId,
+			payment_method: userCard.paymentToken
+		})
+		if (!paymentIntent) throw ({ errorCode: USER_ERROR_CODE.PAYMENT_FAILED })
+		console.log(paymentIntent);
+		const paymentIntentConfirm = await stripe.paymentIntents.confirm(
+			paymentIntent.id,
+			{ payment_method: paymentIntent.payment_method }
+		)
+		console.log(paymentIntentConfirm);
+		if (!paymentIntentConfirm) throw ({ errorCode: USER_ERROR_CODE.WALLET_AMOUNT_ADD_FAILED })
+
+		// user.paymentIntentId = paymentIntent.id
+		// await user.save()
+		return res.json({ success: true})
+	} catch (error) {
+		console.log(error)
+		utils.catchBlockErrors(req.headers.lang, error, res)
+	}
+}
+
+exports.selectCard = async (req, res) => {
+	try {
+		await utils.checkRequestParams(req.body, [{ name: 'userId', type: 'string' }, { name: 'cardId', type: 'string' }])
+		const requestDataBody = req.body
+		const user = await User.findOne({ _id: requestDataBody.userId })
+		if (!user) throw ({ errorCode: USER_ERROR_CODE.USER_DATA_NOT_FOUND })
+		await Card.findOneAndUpdate({ _id: { $nin: requestDataBody.cardId }, userId: requestDataBody.userId, isDefault: true }, { isDefault: false }, { new: true })
+		const selectedCard = await Card.findOne({ _id: requestDataBody.cardId, userId: requestDataBody.userId })
+		if (!selectedCard) throw ({ errorCode: CARD_ERROR_CODE.CARD_DATA_NOT_FOUND })
+		selectedCard.isDefault = true
+		await selectedCard.save()
+		return res.json({ success: true, ...utils.middleware(req.headers.lang, CARD_MESSAGE_CODE.CARD_SELECTED_SUCCESSFULLY, true), responseData: selectedCard })
+	} catch (error) {
+		console.log(error)
+		utils.catchBlockErrors(req.headers.lang, error, res)
+	}
+}
 
 exports.paymentIntent = async (req,res) => {
 	try {
@@ -22,6 +148,46 @@ exports.paymentIntent = async (req,res) => {
 	}
 }
 
+exports.getStripePaymentIdForWallet = async (req, res) => {
+	try {
+		const stripe = require('stripe')('sk_test_51McibOLu6kryVLFNz5u9xGMfKSF63IFBdEhxHv2WqeSOSK6fFQRs4OVZpEtMk2QHkNtLGYHsFfPxtgPVqZHsbrJE00hOOT347g');
+		const paymentIntent = await stripe.paymentIntents.create({
+			// amount: Math.round((amount * 100)),
+			// currency: 'usd', // user.walletCurrencyCode,
+			// customer: user.customerId,
+			// payment_method: userCard.paymentToken
+			amount: 2000,
+  			currency: 'cad',
+  			automatic_payment_methods: {enabled: true},
+		})
+		if (!paymentIntent) throw ({ errorCode: USER_ERROR_CODE.PAYMENT_FAILED })
+		
+		return res.json({ success: true, responseData: paymentIntent })
+	} catch (error) {
+		console.log(error)
+		utils.catchBlockErrors(req.headers.lang, error, res)
+	}
+}
+
+exports.ConfirmStripePaymentIdForWallet = async (req, res) => {
+	try {
+		const stripe = require('stripe')('sk_test_51McibOLu6kryVLFNz5u9xGMfKSF63IFBdEhxHv2WqeSOSK6fFQRs4OVZpEtMk2QHkNtLGYHsFfPxtgPVqZHsbrJE00hOOT347g');
+		const paymentIntent = await stripe.confirmCardPayment(
+			'pk_test_51McibOLu6kryVLFNNAgLmzUtUFiS1q4OIDeOOlLikxYK24uK14tHgOnr6uTVOZNFrR5008FF1ASOiO7WZMU2Ti7B00imyDI9sm',
+			{
+				payment_method:"card_1MhvecLu6kryVLFNYrpXlugK"
+			}
+			
+		)
+		if (!paymentIntent) throw ({ errorCode: USER_ERROR_CODE.WALLET_AMOUNT_ADD_FAILED })
+		return res.json({ success: true, responseData: paymentIntent })
+	} catch (error) {
+		console.log(error)
+		utils.catchBlockErrors(req.headers.lang, error, res)
+	}
+}
+
+
 exports.addAdmin = async (req, res) => {
     try {
         await utils.checkRequestParams(req.body, [{ name: 'adminName', type: 'string' }, { name: 'email', type: 'string' }, { name: 'password', type: 'string' }])
@@ -34,7 +200,7 @@ exports.addAdmin = async (req, res) => {
             email: requestDataBody.email.trim().toLowerCase(),
             password: utils.encryptPassword(password)
         })
-		utils.sendEmails(newAdmin.email,'123456')
+		// utils.sendEmails(newAdmin.email,'123456')
         const addedAdmin = await newAdmin.save()
         if (!addedAdmin) throw ({ errorCode: ADMIN_ERROR_CODE.ADMIN_NOT_SAVED })
         return res.json({ success: true, ...utils.middleware(req.headers.lang, ADMIN_MESSAGE_CODE.ADMIN_ADDED, true), responseData: addedAdmin._id })

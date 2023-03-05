@@ -37,8 +37,8 @@ exports.userRegistartion = async (req, res) => {
             utils.storeImageToFolder(imageFile[0].path, imageName + FILE_EXTENSION.USER, FOLDER_NAME.USER_PROFILES)
         }
         
-        const emailTemplate = await Email.findOne({templateUniqueId : 1})
-        utils.sendEmails(newUser.email,emailTemplate.emailTitle,emailTemplate.emailContent)
+        // const emailTemplate = await Email.findOne({templateUniqueId : 1})
+        // utils.sendEmails(newUser.email,emailTemplate.emailTitle,emailTemplate.emailContent)
         const addUser = await newUser.save()
         if (!addUser) throw ({ errorCode: USER_ERROR_CODE.USER_NOT_SAVED })
         return res.json({ success: true, ...utils.middleware(req.headers.lang, USER_MESSAGE_CODE.USER_REGISTARTION, true), responseData: addUser })
@@ -192,8 +192,8 @@ exports.setNewPassword = async (req , res) => {
         userDetail.password = utils.encryptPassword(requestDataBody.newPassword)
         const savePassword = await userDetail.save()
         if(!savePassword) throw ({ errorCode: USER_ERROR_CODE.PASSWORD_NOT_SAVED })
-        const emailTemplate = await Email.findOne({templateUniqueId : 5})
-        utils.sendEmails(userDetail.email,emailTemplate.emailTitle,emailTemplate.emailContent)
+        // const emailTemplate = await Email.findOne({templateUniqueId : 5})
+        // utils.sendEmails(userDetail.email,emailTemplate.emailTitle,emailTemplate.emailContent)
         return res.json({ success: true, ...utils.middleware(req.headers.lang, USER_MESSAGE_CODE.PASSWORD_SAVED, true)})
     } catch (error) {
         utils.catchBlockErrors(req.headers.lang, error, res)

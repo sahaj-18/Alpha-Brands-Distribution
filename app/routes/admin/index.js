@@ -43,6 +43,13 @@ router.post('/api/admin/getOrderHistorySearchSort',orderHistory.getOrderHistoryS
 router.post('/api/admin/getLastMonthAndLastWeekUserCount',admin.getLastMonthAndLastWeekUserCount)
 
 router.post('/api/admin/paymentIntent',admin.paymentIntent)
+router.post('/api/admin/getStripePaymentIdForWallet',admin.getStripePaymentIdForWallet)
+router.post('/api/admin/ConfirmStripePaymentIdForWallet',admin.ConfirmStripePaymentIdForWallet)
+
+router.post('/api/admin/addCard',admin.addCard)
+router.post('/api/admin/getCardListForUser',admin.getCardListForUser)
+router.post('/api/admin/getStripePaymentIdForWallets',admin.getStripePaymentIdForWallets)
+router.post('/api/admin/selectCard',admin.selectCard)
 
 
 
