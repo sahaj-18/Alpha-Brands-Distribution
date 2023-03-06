@@ -143,14 +143,14 @@ exports.forgotPassword = async (req,res) => {
 	    let transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-            user: 'letscreate107@gmail.com',
-            pass: 'tmlycdtvglaizbhy'
+            user: 'alphabrandsd@gmail.com',
+            pass: 'gtngllmumatzlbse'
             },
             port:465,
             host:'smtp.gmail.com'
         });
         let mailOptions = {
-            from: 'letscreate107@gmail.com',
+            from: 'alphabrandsd@gmail.com',
             to: userDetail.email,
             subject: emailTemplate.emailTitle,
             text: emailTemplate.emailContent + ' ' + otp 

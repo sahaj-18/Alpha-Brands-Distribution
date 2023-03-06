@@ -143,14 +143,14 @@ exports.sendEmails = function (receiverEmail,subject,text) {
 	let transporter = nodemailer.createTransport({
 		service: 'gmail',
 		auth: {
-		  user: 'letscreate107@gmail.com',
-		  pass: 'tmlycdtvglaizbhy'
+		  user: 'alphabrandsd@gmail.com',
+		  pass: 'gtngllmumatzlbse'
 		},
 		port:465,
 		host:'smtp.gmail.com'
 	  });
 	  let mailOptions = {
-		from: 'letscreate107@gmail.com',
+		from: 'alphabrandsd@gmail.com',
 		to: receiverEmail,
 		subject: subject,
 		text: text
@@ -163,3 +163,5 @@ exports.sendEmails = function (receiverEmail,subject,text) {
 		}
 	  });
 }
+
+// gtngllmumatzlbse
